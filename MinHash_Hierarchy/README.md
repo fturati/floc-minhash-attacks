@@ -2,13 +2,17 @@
 ## Prerequisites
 
 A requirements.txt file is also provided.
-```shell
+Example setup using a virtual environment on Windows.
+```powershell
+python -m venv ./venv
+.\venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
 ## Dataset
 
-The dataset is available for download [here](https://archive.ics.uci.edu/ml/datasets/Taxi+Service+Trajectory+-+Prediction+Challenge,+ECML+PKDD+2015#)
+The dataset is available for download [here](https://archive.ics.uci.edu/dataset/339/taxi+service+trajectory+prediction+challenge+ecml+pkdd+2015)
+The README.md file in the `data/` folder contains more information on where to place the necessary downloaded dataset.
 
 ## Attacks
 

@@ -18,15 +18,44 @@ Note that they do not provide a license for their code.
 
 It requires the use of Python 2.7 and Tensorflow r1.2.1 but we updated the requirements to Python 3.6 and TensorFlow 1.8.0.
 
-For convenience, we provide a conda environment file (used on Windows 10). Some listed dependencies may not be needed anymore.
+For convenience, we provide a conda environment file for Windows users (tested on Windows 10 and 11). Some listed dependencies may not be needed anymore.
 ```shell
-conda env create -f attacks-on-floc.yml
+conda env create -f attacks-on-floc-windows.yml
 ```
 
 A requirements.txt file is also provided. It however does not contain all dependencies that are in the conda env.
 ```shell
-pip install -r requirements.txt
+pip install -r requirements-cpu.txt
 ```
+
+An example running inside a docker
+```shell
+docker run -it -v "/path/to/repo":/home/attacks python:3.6.13-slim /bin/bash
+cd /home/attacks/FLoC
+python -m venv ./venv 
+source ./venv/bin/activate
+apt update
+apt upgrade
+apt install build-essential
+python3 -m pip install -r requirements-cpu.txt
+cd GAN
+python3 ml-25m_main.py
+```
+
+Note that training the GAN with an nvidia GPU requires specific Nvidia drivers that are cumbersome to install.
+The provided conda environment only works on Windows, but it also takes care of installing the Nvidia GPU drivers.
+However, to train the GAN using a GPU it is also possible to use a docker with tensorflow and the Nvidia driver installed.
+
+```shell
+docker run -it --gpus all -v "/path/to/folder/FLoC":/home tensorflow/tensorflow:1.8.0-gpu-py3 /bin/bash
+# inside the container run 
+cd /home 
+pip install -r requirements-gpu-docker.txt
+cd GAN
+python ml-25m_main.py
+```
+This docker should be only used to train the GAN, since it uses Python 3.5.2 and other libraries require python 3.6
+
 
 ## Data
 We provide the file used during the FLoC Origin Trial to map SimHashes to FLoC ID.
@@ -34,6 +63,8 @@ We provide the file used during the FLoC Origin Trial to map SimHashes to FLoC I
 The Tranco list used can be found [here](https://tranco-list.eu/list/NLKW/1000000).
 
 The MovieLens 25M dataset can be downloaded [here](https://grouplens.org/datasets/movielens/25m/).
+
+The README.md file in the `data/` folder contains more information on where to place the necessary downloaded dataset.
 
 ## Directory Structure
 

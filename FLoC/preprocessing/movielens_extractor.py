@@ -463,7 +463,9 @@ def generate_train_test_data(movies_filepath, ratings_filepath, seed=1337, val_s
 
 
 if __name__ == '__main__':
-    folder_path = '../data/ml-25m'
+    import os
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    folder_path = f'{script_dir}/../data/ml-25m'
     movies_file = f'{folder_path}/movies.csv'
     ratings_file = f'{folder_path}/ratings.csv'
     #extract_data('../data/ml-25m')

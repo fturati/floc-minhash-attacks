@@ -1,12 +1,14 @@
 import json
 import publicsuffixlist
 import argparse
+import os
 # Taken and adapted from [1]
 # [1] https://github.com/shigeki/floc_simulator/blob/WIP/packages/floc/setup.go
 
 # cluster data from chrome files
 # (\AppData\Local\Google\Chrome\User Data\Floc\1.0.6 on windows)
-cluster_file = "../data/Floc/1.0.6/SortingLshClusters"
+script_dir = os.path.dirname(os.path.realpath(__file__))
+cluster_file = f"{script_dir}/../data/Floc/1.0.6/SortingLshClusters"
 
 kFlocIdMinimumHistoryDomainSizeRequired = 7
 

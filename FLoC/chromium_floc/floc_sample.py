@@ -1,5 +1,6 @@
-import setup
+from FLoC.chromium_floc import setup
 from FLoC.chromium_components import sorting_lsh_cluster, sim_hash, cityhash
+import os
 
 kMaxNumberOfBitsInFloc = 50 # uint8
 
@@ -40,9 +41,10 @@ def compute_fingerprint_vector(domain_name, output_size):
     return fingerprint_vector
 
 
+script_dir = os.path.dirname(os.path.realpath(__file__))
 # Filepath are relative to directory where run code
-cluster_file = "../data/Floc/1.0.6/SortingLshClusters"
-domain_file = '../data/host_list.json'
+cluster_file = f"{script_dir}/../data/Floc/1.0.6/SortingLshClusters"
+domain_file = f'{script_dir}/../data/host_list.json'
 domain_list, sorting_lsh_cluster_data = setup.setup(cluster_fp=cluster_file, domain_fp=domain_file)
 print(sorting_lsh_cluster_data)
 

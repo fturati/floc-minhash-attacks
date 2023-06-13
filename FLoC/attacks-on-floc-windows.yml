@@ -89,4 +89,3 @@ dependencies:
     - protobuf==3.18.1
     - publicsuffixlist==0.7.12
     - werkzeug==2.0.2
-prefix: D:\Programming\Python\Anaconda3\envs\LeakGANpy3_6tf1_8

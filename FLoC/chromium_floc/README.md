@@ -3,5 +3,11 @@ In particular the [main](https://github.com/shigeki/floc_simulator/blob/WIP/demo
 
 To perform the FLoC computation according to the version used during the Origin Trial, one can run `floc_sample.py`.
 
+```shell
+# assuming terminal starts in this directory
+cd ../..
+python -m FLoC.chromium_floc.floc_sample
+```
+
 It makes use of `../data/host_list.json` for the browsing history and `../data/Floc/1.0.6/SortingLshClusters` to map SimHashes to cohort IDs.
 

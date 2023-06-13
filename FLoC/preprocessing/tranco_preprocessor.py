@@ -1,4 +1,5 @@
 from FLoC.chromium_components import cityhash
+import os
 
 def extract_top_n(n, filepath):
     top_n_domains = []
@@ -29,6 +30,8 @@ def precompute_cityhash(domain_list):
     return cityhash_lookup, hash_for_domain
 
 if __name__ == '__main__':
+    script_dir = os.path.dirname(os.path.realpath(__file__))
     n = 1_000_000
-    top_domains = extract_top_n(n, f'../data/tranco_NLKW.csv')
+    top_domains = extract_top_n(n, f'{script_dir}/../data/tranco_NLKW.csv')
     cityhash_lookup = precompute_cityhash(top_domains)
+    print(cityhash_lookup)

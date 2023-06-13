@@ -6,7 +6,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from MinHash_Hierarchy.minhash import generate_target_set, generate_cryptographic_hash_list, \
+from minhash import generate_target_set, generate_cryptographic_hash_list, \
     compute_hashfunc_minhash_signature, sample_random_coefficients, hash_list_from_coeffs
 from pip._vendor.colorama import Fore, init
 

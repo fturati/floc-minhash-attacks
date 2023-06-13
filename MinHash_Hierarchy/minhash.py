@@ -4,7 +4,7 @@ import random
 from random import shuffle
 import numpy as np
 from tqdm import tqdm, trange
-import FLoC.utils as utils
+# from FLoC import utils
 from codetiming import Timer
 
 # Some part taken from or inspired by https://www.pinecone.io/learn/locality-sensitive-hashing/
@@ -157,7 +157,7 @@ def recover_set_from_minhash_sig(signature, minhash_to_vocab_list: list):
         elements_in_set.update(in_set)
         elements_maybe_in_set.update(maybe_in_set)
 
-    print(f'DEBUG:potential set elements: {utils.pretty_format(potential_set_elements, ppindent=1, ppwidth=140, ppcompact=True)}')
+    # print(f'DEBUG:potential set elements: {utils.pretty_format(potential_set_elements, ppindent=1, ppwidth=140, ppcompact=True)}')
 
     if len(elements_not_in_set.intersection(elements_in_set)) != 0:
         print(f'elems not in set {elements_not_in_set} intersection {elements_in_set} elems in set')

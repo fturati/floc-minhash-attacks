@@ -296,6 +296,7 @@ class MovieLensCorpus(object):
 if __name__ == '__main__':
     # can check [1] for a usage of corpus
     # [1] https://github.com/shizhediao/TILGAN/blob/main/unconditional_generation/train.py
-    data_path = f'../data/ml-25m/' # need train.txt and test.txt
+    script_dir = os.path.dirname(os.path.realpath(__file__))
+    data_path = f'{script_dir}/../data/ml-25m/' # need train.txt and test.txt
     # corpus = Corpus(data_path, maxlen=20, vocab_size=11000, lowercase=False)
     ml25m_corpus = MovieLensCorpus(data_path=data_path, maxlen=32, vocab_size=5000, tilgan_gen=False, lowercase=False)

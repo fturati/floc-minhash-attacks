@@ -1,6 +1,6 @@
 # Dataset
 
-The dataset is available for download [here](https://archive.ics.uci.edu/ml/datasets/Taxi+Service+Trajectory+-+Prediction+Challenge,+ECML+PKDD+2015#).
+The dataset is available for download [here](https://archive.ics.uci.edu/dataset/339/taxi+service+trajectory+prediction+challenge+ecml+pkdd+2015).
 Only the train.csv file is needed.
 The following directory structure includes the other files for completeness.
 
