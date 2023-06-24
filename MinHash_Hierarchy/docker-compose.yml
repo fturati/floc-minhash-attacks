@@ -1,0 +1,10 @@
+version: "3.8"
+
+name: minhash_hierarchy
+services:
+  attack_lsh:
+    build: .
+    command: python porto_trajectories.py
+    container_name: attack
+    volumes:
+      - .:/source

@@ -247,7 +247,8 @@ def plot_hist2d(lats, lons, lat_ckpts, lon_ckpts, title=None, savepath=None, cma
     if cmap is None:
         ax.hist2d(lons, lats, bins=(lon_ckpts, lat_ckpts), norm=LogPlusOneNorm())
     else:
-        ax.hist2d(lons, lats, bins=(lon_ckpts, lat_ckpts), norm=LogPlusOneNorm(), vmin=vmin, vmax=vmax, cmap=cmap)
+        # Matplotlib 3.5 vmin, vmax now inside norm=func() if norm present
+        ax.hist2d(lons, lats, bins=(lon_ckpts, lat_ckpts), norm=LogPlusOneNorm(vmin=vmin, vmax=vmax), cmap=cmap)
     ax.set_aspect(1)
 
     if title is not None:
@@ -362,8 +363,9 @@ def plot_hist2d_target_recovered(lats_target, lons_target, lats_recovered, lons_
     ax1.set_title('Target')
 
     # Here since vmax is transformed by LogPlusOneNorm() need to put 2 and not math.log(3) ?
-    ax2.hist2d(lons_recovered, lats_recovered, bins=(lon_ckpts, lat_ckpts), norm=LogPlusOneNorm(),
-               vmin=0, vmax=2, cmap='binary')
+    # changes from matplotlib 3.5 https://matplotlib.org/3.5.0/api/prev_api_changes/api_changes_3.5.0.html
+    # if use norm vmin= and vmax= should be inside norm function.
+    ax2.hist2d(lons_recovered, lats_recovered, bins=(lon_ckpts, lat_ckpts), norm=LogPlusOneNorm(vmin=0, vmax=2), cmap='binary')
     ax2.set_aspect(1)
     ax2.set_title('Recovered')
 
@@ -393,18 +395,42 @@ def get_trajectories(start_id, end_id, offset=0, filepath='./data/Porto/train.cs
     :return: a list of trajectory (represented as a list of coordinates, and a coordinate is a list: [lat, lon])
     """
     print(f'reading porto taxi dataset...')
+    load_all_traj_in_mem = False
+    if load_all_traj_in_mem:
+        # can check visualize_heatmap() for other read_csv params
+        df = pd.read_csv(filepath, converters={'POLYLINE': lambda x: json.loads(x)})
+        # drop unused columns (for train TRIP_ID seems to be TIMESTAMP + TAXI_ID (where + is concatenation)
+        df.drop(inplace=True, columns=['CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'DAY_TYPE', 'MISSING_DATA'])
+        ## trajectory_s = df.loc[:, 'POLYLINE'].head(first_n)  # [['POLYLINE']] if want it to return a dataframe [] returns serie
+        # Note: could shuffle dataframe
+        trajectory_s = df.loc[offset + start_id:offset + end_id, 'POLYLINE']
+        # not best to iterate over pandas dataframe, better to vectorize etc. list comprehension have some acceleration ?
+        trajectory_list = [polyline for polyline in trajectory_s]
+        # if too slow could save selected trajectories and then restore from save file
 
-    # can check visualize_heatmap() for other read_csv params
-    df = pd.read_csv(filepath, converters={'POLYLINE': lambda x: json.loads(x)})
-    # drop unused columns (for train TRIP_ID seems to be TIMESTAMP + TAXI_ID (where + is concatenation)
-    df.drop(inplace=True, columns=['CALL_TYPE', 'ORIGIN_CALL', 'ORIGIN_STAND', 'DAY_TYPE', 'MISSING_DATA'])
-    # trajectory_s = df.loc[:, 'POLYLINE'].head(first_n)  # [['POLYLINE']] if want it to return a dataframe [] returns serie
-    # Note: could shuffle dataframe
-    trajectory_s = df.loc[offset + start_id:offset + end_id, 'POLYLINE']
+    else:
+        CHUNK_SIZE = 1000
+        df = pd.read_csv(filepath, chunksize=CHUNK_SIZE, usecols=['POLYLINE'], converters={'POLYLINE': lambda x: json.loads(x)})
 
-    # not best to iterate over pandas dataframe, better to vectorize etc. list comprehension have some acceleration ?
-    trajectory_list = [polyline for polyline in trajectory_s]
-    # if too slow could save selected trajectories and then restore from save file
+        start_index, end_index = offset + start_id, offset + end_id
+        trajectory_list = []
+        print(f'loading trajectories [{start_index}, {end_index}]')
+        for chunk in df:
+            # print(type(chunk), chunk)
+            # print(type(chunk.index), chunk.index)
+
+            if start_index - CHUNK_SIZE <= chunk.index.start and chunk.index.stop <= end_index + CHUNK_SIZE:
+                start_chunk_index = max(chunk.index.start, start_index)
+                stop_chunk_index = min(chunk.index.stop, end_index)
+                print(f'processing chunk [{start_chunk_index}, {stop_chunk_index}[')
+                # Note with dataframe.loc in slice both ends are included (but .index.stop already +1 on last index)
+                trajectory_s = chunk.loc[start_chunk_index:stop_chunk_index, 'POLYLINE']
+                trajectory_list.extend([polyline for polyline in trajectory_s])
+            # chunk.loc[]
+
+    # Do not need df anymore
+    del df
+
     return trajectory_list
 
 
@@ -635,7 +661,7 @@ if __name__ == '__main__':
     extend_hist2d_ckpts = False
     # Note would most likely fail if set to False, due to reuse of latitudes, longitudes derived variable
     compute_ckpt_stats = True
-    use_cryptographic_hash = False
+    use_cryptographic_hash = True
 
     # To save for latex.
     # https://timodenk.com/blog/exporting-matplotlib-plots-to-latex/
