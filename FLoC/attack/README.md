@@ -2,13 +2,26 @@ This directory contains some components of our attacks.
 
 The files `generating_histories.py` and `integer_programming.py` contains parts of our attacks that are mainly used in `../evaluation/pipeline.py`.
 * `generating_histories.py` is focused on using the GAN to generate user histories. It is the only file in this folder without a main function. So it cannot be run directly. 
-* `integer_programming.py` uses integer programming to perform a preimage attack on SimHash.
+* `integer_programming.py` uses integer programming to perform a preimage attack on SimHash. Note that we use Gurobi as a solver, and it requires a [license](https://www.gurobi.com/academia/academic-program-and-licenses/) after the end of the free trial.
 
 The two remaining files use a heuristic-based preimage attack on SimHash and can be run individually. Some parameters may need to be changed.
 * `preimage.py` contains the heuristic-based preimage attack.
 * `leakGAN_dis.py` applies the GAN's discriminator on the output of the heuristic-based preimage attack on SimHash.
 
 The files making use of the GAN needs it to be trained as they need access to saved checkpoints files to restore the weights of the model.
+
+
+## Usage
+
+Example of how to run the preimage.py file.
+Note that generating_histories.py has no main function, so it cannot be run directly.
+
+```shell
+# assuming terminal starts in this directory
+cd ../..
+python -m FLoC.attack.preimage
+```
+
 
 ###### Miscellaneous
 Some of the code may have only be run with JetBrains PyCharm's Python Console, since it provides variables preview and inspection features.

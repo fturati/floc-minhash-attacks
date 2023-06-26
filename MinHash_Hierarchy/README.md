@@ -52,3 +52,4 @@ docker stop attack
 ### Outputs
 Running porto_trajectories.py will create a log folder and output its path on the terminal.
 In that log folder the console_output.txt file contains some debug information about the run along with some statistic on the attack.
+There can also be multiple `split_i` subfolders those contain the saved trajectory plots for the split i.

@@ -872,7 +872,7 @@ def hamming_closest_simhash(target_simhash, test_simhashes, prefix_bitlength=64)
 
 
 if __name__ == '__main__':
-
+    script_dirpath = os.path.dirname(os.path.realpath(__file__))
     # parser = argparse.ArgumentParser()
     # parser.add_argument()
     # args = parser.parse_args()
@@ -900,7 +900,7 @@ if __name__ == '__main__':
         'TARGET_SIMHASH_COUNT': 5, # How many target simhash generates # NOTE: used 10 for disc. confidences # Note might need different seeds so do +1 on prev seed
         'SIMHASH_BITCOUNT_RANGE': (15,15), # both endpoint included
         'data_gen_source': 'RAND', # If use 'GAN' or 'RAND' for generation to make int prog on
-        'CHECKPOINT_FILEPATH': f'../GAN/ckpts_ml25m/leakgan-61', # if None then load latest from init_gen model path,
+        'CHECKPOINT_FILEPATH': f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61', # if None then load latest from init_gen model path,
         # 'already_init_gan': False, # Tensorflow crash if redeclare variable, only change the checkpoint # not needed anymore
         'log_filename': 'log',
         'timer_nametag': '',
@@ -913,7 +913,7 @@ if __name__ == '__main__':
     gp.setParam("OutputFlag", 0) # set param for all model
     log_to_stdout = True # if logger also logs to console
 
-    log_folder = f'./logs/run_{datetime.now():%d-%m-%Y_at_%Hh%Mm%Ss}/'
+    log_folder = f'{script_dirpath}/logs/run_{datetime.now():%d-%m-%Y_at_%Hh%Mm%Ss}/'
     Path(log_folder).mkdir(parents=True, exist_ok=True)
 
     # Variable defined in broader scope (should be accessible inside called function scope)
@@ -925,12 +925,12 @@ if __name__ == '__main__':
     #####################
     hash_for_movie, title_for_movie, movie_for_title, movie_id_list = precompute_cityhash_movielens()
     # Load vocabulary
-    word_ml25m, vocab_ml25m = pickle.load(open('../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
+    word_ml25m, vocab_ml25m = pickle.load(open(f'{script_dirpath}/../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
 
     # Precompute 64 bit simhash (maximum) of test (or eval if used as validation during training)
-    save_path = './saved/test_set_simhashes_dict.pkl'
+    save_path = f'{script_dirpath}/saved/test_set_simhashes_dict.pkl'
     if not os.path.isfile(save_path):
-        testdata_simhash_to_hist = precompute_simhash_on_data(word_ml25m, title_for_movie, datafile='../GAN/save_ml25m/realtest_ml25m_5000_32.txt')
+        testdata_simhash_to_hist = precompute_simhash_on_data(word_ml25m, title_for_movie, datafile=f'{script_dirpath}/../GAN/save_ml25m/realtest_ml25m_5000_32.txt')
     else:
         testdata_simhash_to_hist = pickle.load(open(save_path, mode='rb'))
 
@@ -1003,16 +1003,16 @@ if __name__ == '__main__':
             'find_mult_sol': False, 'gurobi_timelimit': 10, 'sol_count_limit': 2048, 'use_dynamic_limit': True,
             'SEQ_LENGTH': 32, 'BATCH_SIZE': 64, 'seed_inc': 0, 'use_gurobi': True, 'use_cvxpy': False,
             # Modified in this evaluation
-            'data_gen_source': 'RAND', 'CHECKPOINT_FILEPATH': f'../GAN/ckpts_ml25m/leakgan-61',
+            'data_gen_source': 'RAND', 'CHECKPOINT_FILEPATH': f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
             'log_filename': 'log', 'timer_nametag': '',
         }
         # Evaluate for GAN checkpoints
         checkpoint_filepaths = [
-            # f'../GAN/ckpts_ml25m/leakgan_preD', f'../GAN/ckpts_ml25m/leakgan_pre', f'../GAN/ckpts_ml25m/leakgan-1',
-            # f'../GAN/ckpts_ml25m/leakgan-11', f'../GAN/ckpts_ml25m/leakgan-21', f'../GAN/ckpts_ml25m/leakgan-31',
-            f'../GAN/ckpts_ml25m/leakgan-41',
-            # f'../GAN/ckpts_ml25m/leakgan-51',
-            f'../GAN/ckpts_ml25m/leakgan-61',
+            # f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_preD', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_pre', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-1',
+            # f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-11', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-21', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-31',
+            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-41',
+            # f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-51',
+            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
             # Note could remove rand from here and run it on all checkpoints too (eg when care about confidence)
             'RAND']
 
@@ -1049,8 +1049,8 @@ if __name__ == '__main__':
 
     if eval_custom:
         checkpoint_filepaths = [
-            f'../GAN/ckpts_ml25m/leakgan-41',
-            f'../GAN/ckpts_ml25m/leakgan-61',
+            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-41',
+            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
         ]
         out_custom_stats = dict()
         PARAMETERS['data_gen_source'] = 'GAN'
@@ -1070,11 +1070,11 @@ if __name__ == '__main__':
     use_multiprocessing = False
     if use_multiprocessing:
         # PARAMETERS to vary
-        checkpoint_filepaths = [#f'../GAN/ckpts_ml25m/leakgan_preD', f'../GAN/ckpts_ml25m/leakgan_pre', f'../GAN/ckpts_ml25m/leakgan-1', f'../GAN/ckpts_ml25m/leakgan-11',
-                                #f'../GAN/ckpts_ml25m/leakgan-21', f'../GAN/ckpts_ml25m/leakgan-31',
-                                f'../GAN/ckpts_ml25m/leakgan-41',
-                                #f'../GAN/ckpts_ml25m/leakgan-51',
-                                f'../GAN/ckpts_ml25m/leakgan-61',
+        checkpoint_filepaths = [#f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_preD', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_pre', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-1', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-11',
+                                #f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-21', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-31',
+                                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-41',
+                                #f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-51',
+                                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
                                 'RAND']
         out_stats = []
         for checkpoint in checkpoint_filepaths:

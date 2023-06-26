@@ -390,7 +390,8 @@ def reconstruct_training_user_movie_rating(training_histories, word_ml25m):
 
 
 if __name__ == '__main__':
-    folder_path = '../data/ml-25m'
+    script_dirpath = os.path.dirname(os.path.realpath(__file__))
+    folder_path = f'{script_dirpath}/../data/ml-25m'
     movies_file = f'{folder_path}/movies.csv'
     ratings_file = f'{folder_path}/ratings.csv'
     PARAMETERS = {
@@ -402,7 +403,7 @@ if __name__ == '__main__':
         'include_chromium_simhash_cluster': True, # Simhash computation according to chromium source code
         'include_wp_simhash_cluster': True, # Whitepaper inspired simhash
         'include_random_cluster': True,
-        'CHECKPOINT_FILEPATH': f'../GAN/ckpts_ml25m/leakgan-61',
+        'CHECKPOINT_FILEPATH': f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
         'run_all_checkpoints': True,
         'used_already_generated_cluster': True, # If reuse GAN saved cluster assignments ?
         'apply_centering': True,
@@ -426,19 +427,19 @@ if __name__ == '__main__':
         # As this is slow need to only load it again when needed otherwise just save the files ?
         if PARAMETERS['apply_centering']:
             # Default: in floc whitepaper centering is applied
-            save_precomputed_features_path = f'./saved/floc-whitepaper-features{use_rating_tag}.npy'
+            save_precomputed_features_path = f'{script_dirpath}/saved/floc-whitepaper-features{use_rating_tag}.npy'
         else:
             # Without centering as it could alter the angles for cosine similarity (ie centering conserves euclidian distances)
-            save_precomputed_features_path = f'./saved/floc-whitepaper-features-not-centered{use_rating_tag}.npy'
-        save_precomputed_chromium_simhash_path = './saved/precomputed_chromium_simhash.pkl'
+            save_precomputed_features_path = f'{script_dirpath}/saved/floc-whitepaper-features-not-centered{use_rating_tag}.npy'
+        save_precomputed_chromium_simhash_path = f'{script_dirpath}/saved/precomputed_chromium_simhash.pkl'
         user_id_count = FULL_USER_ID_COUNT # use a name alias as now have 120000 users for training ?
 
     elif PARAMETERS['data_source'] == 'train':
         if PARAMETERS['apply_centering']:
-            save_precomputed_features_path = './saved/floc-whitepaper-features-train.npy'
+            save_precomputed_features_path = f'{script_dirpath}/saved/floc-whitepaper-features-train.npy'
         else:
-            save_precomputed_features_path = './saved/floc-whitepaper-features-train-not-centered.npy'
-        save_precomputed_chromium_simhash_path = './saved/precomputed_chromium_simhash_train.pkl'
+            save_precomputed_features_path = f'{script_dirpath}/saved/floc-whitepaper-features-train-not-centered.npy'
+        save_precomputed_chromium_simhash_path = f'{script_dirpath}/saved/precomputed_chromium_simhash_train.pkl'
         user_id_count = 120_000 # might wanna define it later when load training ? also 2 empty histories (21053, 43986)
 
     file_exists = (os.path.isfile(save_precomputed_features_path) and os.path.isfile(save_precomputed_chromium_simhash_path))
@@ -452,9 +453,9 @@ if __name__ == '__main__':
                 userid_2_movieidrating = read_ratings(ratings_file, need_rating=True)
             elif PARAMETERS['data_source'] == 'train':
                 logging.info(f'Load training data...')
-                training_histories = load_train_test('../GAN/save_ml25m/realtrain_ml25m_5000_32.txt')
+                training_histories = load_train_test(f'{script_dirpath}/../GAN/save_ml25m/realtrain_ml25m_5000_32.txt')
                 logging.info(f'Load token (encoding) to word (movieid) mapping...')
-                word_ml25m, vocab_ml25m = pickle.load(open('../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
+                word_ml25m, vocab_ml25m = pickle.load(open(f'{script_dirpath}/../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
                 # Note for training data as did not keep users all the ratings are taken as 1
                 userid_2_movieidrating = reconstruct_training_user_movie_rating(training_histories, word_ml25m)
 
@@ -510,7 +511,7 @@ if __name__ == '__main__':
                 simhash_cluster_assignment[cur_simhash].append(i-1)
 
             # Save cluster assignment for later comparisons:
-            with open(f'./saved/cluster_assignments/real/chromium_simhash_hist_cluster_{PARAMETERS["data_source"]}_{cur_bitlength}.pkl', 'wb') as f:
+            with open(f'{script_dirpath}/saved/cluster_assignments/real/chromium_simhash_hist_cluster_{PARAMETERS["data_source"]}_{cur_bitlength}.pkl', 'wb') as f:
                 pickle.dump(simhash_cluster_assignment, f)
 
             # Compute some cohort size statistics
@@ -701,7 +702,7 @@ if __name__ == '__main__':
         # otherwise might be loaded a lot:
         logging.info(f'Load token (encoding) to word (movieid) mapping...')
         # Load vocabulary (word_ml25m, vocab_ml25m)
-        word_ml25m, vocab_ml25m = pickle.load(open('../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
+        word_ml25m, vocab_ml25m = pickle.load(open(f'{script_dirpath}/../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
         # Precompute cityhashes (only need hash_for_movie and title_for_movie currently ?) for movies in training vocabulary
         hash_for_movie, title_for_movie, movie_for_title, movie_id_list = precompute_cityhash_movielens()
 
@@ -713,11 +714,11 @@ if __name__ == '__main__':
         run4all_checkpoints = PARAMETERS['run_all_checkpoints']
         if run4all_checkpoints:
             checkpoint_filepaths = [
-                f'../GAN/ckpts_ml25m/leakgan_preD', f'../GAN/ckpts_ml25m/leakgan_pre',
-                f'../GAN/ckpts_ml25m/leakgan-1', f'../GAN/ckpts_ml25m/leakgan-11',
-                f'../GAN/ckpts_ml25m/leakgan-21', f'../GAN/ckpts_ml25m/leakgan-31',
-                f'../GAN/ckpts_ml25m/leakgan-41', f'../GAN/ckpts_ml25m/leakgan-51',
-                f'../GAN/ckpts_ml25m/leakgan-61',
+                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_preD', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_pre',
+                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-1', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-11',
+                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-21', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-31',
+                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-41', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-51',
+                f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
             ]
         else:
             checkpoint_filepaths = PARAMETERS['CHECKPOINT_FILEPATH']
@@ -748,7 +749,7 @@ if __name__ == '__main__':
 
                 # Note: as this step is dumped by pickle could load an already saved state
                 gan_simhash_cluster_assignment = {}
-                gan_gen_save_folderpath = f'./saved/cluster_assignments/generated/checkpoint_{ckpt_nbr}'
+                gan_gen_save_folderpath = f'{script_dirpath}//saved/cluster_assignments/generated/checkpoint_{ckpt_nbr}'
                 if PARAMETERS['used_already_generated_cluster']:
                     # Note that assumes already generated so does not check if file not there
                     gan_saved_cluster_path = f'{gan_gen_save_folderpath}/LeakGAN_simhash_hist_cluster_{cur_bitlength}_{cluster_size}.pkl'
@@ -864,11 +865,11 @@ if __name__ == '__main__':
 
 
             plot_results(plot_xydata_dict, filename=f'98percentile_ckpt_{ckpt_nbr}',
-                         save_path=f'./saved/figs', title_tag=PARAMETERS['data_source'])
+                         save_path=f'{script_dirpath}/saved/figs', title_tag=PARAMETERS['data_source'])
 
 
     # Plot results (legacy one in the end before multiple checkpoint run for GAN)
-    plot_results(plot_xydata_dict, save_path=f'./saved/figs', title_tag=PARAMETERS['data_source'])
+    plot_results(plot_xydata_dict, save_path=f'{script_dirpath}/saved/figs', title_tag=PARAMETERS['data_source'])
 
     timers = Timer.timers
 

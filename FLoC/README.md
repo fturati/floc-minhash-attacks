@@ -28,6 +28,16 @@ A requirements.txt file is also provided. It however does not contain all depend
 pip install -r requirements-cpu.txt
 ```
 
+A docker is also provided for running using only the CPU. 
+For training a GAN this is very slow, so an example of running a docker with a GPU is also given.
+```shell
+docker compose up -d 
+docker ps                                 # check the name of the container e.g. attack-floc
+docker exec -it attack-floc /bin/bash     # replace attack-floc by name of container in previous command if different
+
+```
+
+
 An example running inside a docker
 ```shell
 docker run -it -v "/path/to/repo":/home/attacks python:3.6.13-slim /bin/bash

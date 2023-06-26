@@ -15,6 +15,7 @@ ecos
 future-fstrings
 gast
 grpcio
+gurobipy==9.1.2
 html5lib==0.9999999
 importlib-metadata
 joblib
@@ -24,7 +25,7 @@ matplotlib
 nltk
 numpy
 osqp
-protobuf
+protobuf==3.19.6
 publicsuffixlist==0.7.12
 pyparsing
 python-dateutil

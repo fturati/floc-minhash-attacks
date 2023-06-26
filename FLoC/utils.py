@@ -1,3 +1,4 @@
+import os
 import random
 from pip._vendor.colorama import Fore, init # colorama always in pip._vendor.colorama
 init(autoreset=True) # to avoid reseting color everytime
@@ -10,6 +11,8 @@ import numpy as np
 from datetime import datetime
 import multiprocessing
 from codetiming import Timer as TimerPlus # Does what did with Timer but more sophisticated
+from pathlib import Path
+import inspect
 
 ################
 # Benchmarking #
@@ -255,7 +258,18 @@ def init_loggers(log_to_stdout=False, log_to_file=True, log_folder=None, filenam
         timestamp = datetime.now().strftime('%d-%m-%Y_%Hh%Mm%Ss')  # timestamp for log file name
         # Note: udpate file name to make a custom depending on what variable change
         # default filemode is 'a' for append
-        f_handler = logging.FileHandler(f'{"./logs" if log_folder is None else log_folder}/{filename}_[{timestamp}].log', 'w', 'utf-8')
+        try:
+            f_handler = logging.FileHandler(f'{"./logs" if log_folder is None else log_folder}/{filename}_[{timestamp}].log', 'w', 'utf-8')
+        except FileNotFoundError:
+            # get the caller script relative path, full path with os.path.join(os.getcwd(), filename)
+            caller_filename = inspect.getframeinfo(sys._getframe(1)).filename
+            # print(f'Called from {caller_filename}')
+            caller_script_dirpath = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), caller_filename)))
+            # If create new folder in same folder as this file
+            # script_dirpath = os.path.dirname(os.path.realpath(__file__))
+            # Path(f'{script_dirpath}').parent.mkdir(parents=True, exist_ok=True)
+            f_handler = logging.FileHandler(f'{caller_script_dirpath}{"/logs" if log_folder is None else log_folder}/{filename}_[{timestamp}].log', 'w', 'utf-8')
+
         f_handler.setFormatter(formatter)
         f_handler.setLevel(fh_lvl)  # only set logging for that handler (eg DEBUG, D5BG, logging.INFO)
         root_logger.addHandler(f_handler)

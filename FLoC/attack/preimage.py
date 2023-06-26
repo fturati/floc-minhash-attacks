@@ -9,6 +9,7 @@ from FLoC.preprocessing.movielens_extractor import precompute_cityhash_movielens
 import pickle
 from FLoC.attack.generating_histories import generate_from_traintest
 from codetiming import Timer
+import os
 # import utils
 # import logging
 
@@ -271,7 +272,7 @@ def generate_target_simhash(output_hash_bitcount=20, seed=None, real_user_movies
             domain_list.add(top_domains[id_domain_drawn]) # use a set
         elif dataset == 'movies':
             if real_user_movies:
-                target_simhashes, target_histories = generate_from_traintest('../GAN/save_ml25m/realtest_ml25m_5000_32.txt', 1,
+                target_simhashes, target_histories = generate_from_traintest('FLoC/GAN/save_ml25m/realtest_ml25m_5000_32.txt', 1,
                                                                             title_for_movie, output_hash_bitcount, word_ml25m, seed=seed)
                 print(f'Generated target SimHash {target_simhashes} from real user history {target_histories}')
                 # It already computes the SimHash (also stop for loop at first iteration)
@@ -400,25 +401,25 @@ def attack_with_retry_after_timeout(timeout, output_hash_bitcount, seed=32, use_
     return return_dict['history'], movie_id_history, target_simhash, target_history
 
 
-# Top N domains
-# Since put reversal of cityhash into sampling process in find_high_value_gaussian_sample
-# might not need those global variables anymore but did not refactor code to remove part that made used of it
-# chosen_dataset = 'movies'
-# Do not need legacy chosen dataset separation here so load everything
-# if chosen_dataset == 'domains':
-N = 1000000 # 100_000
-top_domains = extract_top_n(N, f'../data/tranco_NLKW.csv')
-cityhash_lookup, hash_for_domain = precompute_cityhash(top_domains)
-# elif chosen_dataset == 'movies':
-hash_for_movie, title_for_movie, movie_for_title, movie_id_list = precompute_cityhash_movielens()
-# Movies does not need it anymore
-# N = len(movie_id_list) # for legacy reason and avoid having more if else at other code locations
-# Load vocab (used in func generate_target_simhash)
-vocab_filepath = f'../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl'
-word_ml25m, vocab_ml25m = pickle.load(open(vocab_filepath, mode='rb'))
-
-
 if __name__ == '__main__':
+    script_dirpath = os.path.dirname(os.path.realpath(__file__))
+    # Top N domains
+    # Since put reversal of cityhash into sampling process in find_high_value_gaussian_sample
+    # might not need those global variables anymore but did not refactor code to remove part that made used of it
+    # chosen_dataset = 'movies'
+    # Do not need legacy chosen dataset separation here so load everything
+    # if chosen_dataset == 'domains':
+    N = 1000000  # 100_000
+    top_domains = extract_top_n(N, f'{script_dirpath}/../data/tranco_NLKW.csv') # 'FLoC/data/tranco_NLKW.csv'
+    cityhash_lookup, hash_for_domain = precompute_cityhash(top_domains)
+    # elif chosen_dataset == 'movies':
+    hash_for_movie, title_for_movie, movie_for_title, movie_id_list = precompute_cityhash_movielens()
+    # Movies does not need it anymore
+    # N = len(movie_id_list) # for legacy reason and avoid having more if else at other code locations
+    # Load vocab (used in func generate_target_simhash)
+    vocab_filepath = f'FLoC/GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl'
+    word_ml25m, vocab_ml25m = pickle.load(open(vocab_filepath, mode='rb'))
+
     # h1, h2 = find_gaussian_outlier(0)
 
     # Try global lookup table for easy access across functions for now ?

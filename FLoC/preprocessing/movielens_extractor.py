@@ -122,7 +122,7 @@ def read_movies(file_path):
 ##############################################################################
 
 # Only precomputes it for movie in LeakGAN vocabulary
-def precompute_cityhash_movielens(movies_path=f'../data/ml-25m/movies.csv',vocab_filepath=f'../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl'):
+def precompute_cityhash_movielens(movies_path=f'FLoC/data/ml-25m/movies.csv',vocab_filepath=f'FLoC/GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl'):
     """
     Precompute the CityHash for the movieIDs
     :param movies_path: path to the movies file
@@ -355,7 +355,7 @@ def filter_movies_history(movie_histories, movie_id_list, max_hist_len = 77, mov
     return movie_id_kept, user_id_kept, filtered_usr_hist_count
 
 
-def generate_vocab(movies_filepath, ratings_filepath, apply_filtering=True, save_path=f'../data/ml-25m/vocab_ml25m.pkl'):
+def generate_vocab(movies_filepath, ratings_filepath, apply_filtering=True, save_path=f'FLoC/data/ml-25m/vocab_ml25m.pkl'):
     """
     Generate a vocabulary for LeakGAN
     :param movies_filepath: path to the movies file from MovieLens dataset
@@ -399,8 +399,8 @@ def generate_vocab(movies_filepath, ratings_filepath, apply_filtering=True, save
     return word, vocab
 
 def generate_train_test_data(movies_filepath, ratings_filepath, seed=1337, val_size=5000, apply_filtering=True,
-                             max_hist_len = 77, save_folder=f'../data/ml-25m',
-                             vocab_file=f'../data/ml-25m/vocab_ml-25m.pkl'):
+                             max_hist_len = 77, save_folder=f'FLoC/data/ml-25m',
+                             vocab_file=f'FLoC/data/ml-25m/vocab_ml-25m.pkl'):
     """
     Generating training and test data for LeakGAN
     :param movies_filepath: path to the movies file

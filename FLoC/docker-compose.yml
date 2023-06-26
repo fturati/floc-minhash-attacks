@@ -1,0 +1,12 @@
+version: "3.8"
+
+name: google-floc
+services:
+  attack_lsh:
+    build: .
+    command: ["tail", "-f", "/dev/null"]
+    container_name: attack-floc
+    volumes:
+      - .:/source/FLoC
+      # Gurobi license see also https://hub.docker.com/r/gurobi/optimizer
+#      - ./gurobi.lic:/opt/gurobi/gurobi.lic:ro

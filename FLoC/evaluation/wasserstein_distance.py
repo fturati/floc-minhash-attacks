@@ -1,12 +1,13 @@
 from scipy.stats import wasserstein_distance
-from attack.generating_histories import init_generator, load_train_test, generate_history, generate_history_rand
-from preprocessing.movielens_extractor import precompute_cityhash_movielens
+from FLoC.attack.generating_histories import init_generator, load_train_test, generate_history, generate_history_rand
+from FLoC.preprocessing.movielens_extractor import precompute_cityhash_movielens
 import numpy as np
 import logging
 import pickle
-import utils
+import FLoC.utils as utils
 import random
 import tensorflow as tf
+import os
 from pip._vendor.colorama import Fore, init # colorama always in pip._vendor.colorama
 init(autoreset=True) # to avoid reseting color everytime
 
@@ -77,6 +78,7 @@ def set_seed(SEED):
     tf.set_random_seed(SEED)
 
 if __name__ == '__main__':
+    script_dirpath = os.path.dirname(os.path.realpath(__file__))
     k = 78 # 5000//64 = 78 # ie if take test set max can get
     PARAMETERS = {
         # Needed for RAND generation
@@ -86,12 +88,12 @@ if __name__ == '__main__':
         'SEQ_LENGTH': 32,
         'BATCH_SIZE': 64,
         'VOCABULARY_SIZE': 5002, # with the 2 special tokens ?
-        'CHECKPOINT_FILEPATH': f'../GAN/ckpts_ml25m/leakgan-61',
+        'CHECKPOINT_FILEPATH': f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61',
         # Needed for logger
         'log_filename': 'wasserstein_distance',
         # Needed for others
         # Used in init_reference_data
-        'reference_empirical_data': '../GAN/save_ml25m/realtest_ml25m_5000_32.txt', # '../GAN/save_ml25m/realtrain_ml25m_5000_32.txt' train or test
+        'reference_empirical_data': f'{script_dirpath}/../GAN/save_ml25m/realtest_ml25m_5000_32.txt', # '../GAN/save_ml25m/realtrain_ml25m_5000_32.txt' train or test
         'sample_size_empirical_data': k*64, # for now same as generated from GAN
         # Needed to report average and stdev
         'number_of_runs': 5,
@@ -99,11 +101,11 @@ if __name__ == '__main__':
         'data_gen_source': 'GAN'
     }
     VOCABULARY_SIZE = PARAMETERS['VOCABULARY_SIZE']
-    checkpoint_filepaths = [f'../GAN/ckpts_ml25m/leakgan_preD', f'../GAN/ckpts_ml25m/leakgan_pre',
-                            f'../GAN/ckpts_ml25m/leakgan-1', f'../GAN/ckpts_ml25m/leakgan-11',
-                            f'../GAN/ckpts_ml25m/leakgan-21', f'../GAN/ckpts_ml25m/leakgan-31',
-                            f'../GAN/ckpts_ml25m/leakgan-41', f'../GAN/ckpts_ml25m/leakgan-51',
-                            f'../GAN/ckpts_ml25m/leakgan-61']
+    checkpoint_filepaths = [f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_preD', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan_pre',
+                            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-1', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-11',
+                            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-21', f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-31',
+                            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-41', f'{script_dirpath}/./GAN/ckpts_ml25m/leakgan-51',
+                            f'{script_dirpath}/../GAN/ckpts_ml25m/leakgan-61']
     ##############
     ## Set SEED ##
     ##############
@@ -131,7 +133,7 @@ if __name__ == '__main__':
     #####################
     hash_for_movie, title_for_movie, movie_for_title, movie_id_list = precompute_cityhash_movielens()
     # Load vocabulary
-    word_ml25m, vocab_ml25m = pickle.load(open('../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
+    word_ml25m, vocab_ml25m = pickle.load(open(f'{script_dirpath}/../GAN/save_ml25m/LeakGAN_ml25m_vocab_5000_32.pkl', mode='rb'))
 
     ## Init reference test set and sample histories
     # Note: can choose train or test
