@@ -34,11 +34,14 @@ For training a GAN this is very slow, so an example of running a docker with a G
 docker compose up -d 
 docker ps                                 # check the name of the container e.g. attack-floc
 docker exec -it attack-floc /bin/bash     # replace attack-floc by name of container in previous command if different
-
+# Training the GAN using CPU (see below for training using GPU)
+cd FLoC/GAN
+python ml-25m_main.py   
+# Run other python files. Check the readme in their respective folders
 ```
 
 
-An example running inside a docker
+An example setup if want to run inside another python docker without using a Dockerfile.
 ```shell
 docker run -it -v "/path/to/repo":/home/attacks python:3.6.13-slim /bin/bash
 cd /home/attacks/FLoC
